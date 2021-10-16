@@ -1,6 +1,7 @@
 title = "BEE";
 
-description = `BEE
+description = `[Click] to move
+Gather Pollen
 `;
 
 characters = [
@@ -27,7 +28,7 @@ RRRRR
 ggg
   g
 `,`
-  BB
+   B
   BB
  BBBB
 BBbbwB
@@ -102,7 +103,7 @@ options = {
   isPlayingBgm: true,
   isReplayEnabled: true,
   theme: "simple",
-  isDrawingParticleFront: true
+  isDrawingParticleFront: true,
 };
 
 function update() {
@@ -171,7 +172,7 @@ function update() {
       speed: 0.3 + (rndi(0, difficulty+1)/10),
     }
     r.push(newObj)
-    if (difficulty > rndi(0,10)){
+    if (difficulty * 1.5 > rndi(0,10)){
       const posX2 = rnd(0, G.WIDTH)
       let newObj2 = {
         pos: vec(posX2, posY),
@@ -179,7 +180,7 @@ function update() {
       }
       r.push(newObj2)
     }
-    if (difficulty > rndi(1,10)){
+    if (difficulty * 1.5 > rndi(1,15)){
       const posX3 = rnd(0, G.WIDTH)
       let newObj3 = {
         pos: vec(posX3, posY),
@@ -199,8 +200,7 @@ function update() {
     }
     player.drawTarget = true;
     player.angle = player.pos.angleTo(player.target)
-    console.log(player.angle)
-    play("select")
+    //play("select")
   }
   
   // Draw Player
@@ -212,12 +212,15 @@ function update() {
   if (player.pCount > 0){
     let offset = Math.max( ceil(3 - player.pCount/3), 1)
     box(player.pos.x + offset*side, player.pos.y + 2, ceil(player.pCount/3))
+    text("~" + floor(player.pCount * (1 + floor((player.pCount - 1)/3)/2)) + "~", G.WIDTH/2 -6, 3);
   }          
   color("black")
   char(addWithCharCode("a", (floor(ticks / 20) % 2)), player.pos, {
     // @ts-ignore
     mirror: {x: side},
   })
+
+  
   
   color("transparent")
   let hiveColl = rect(58, 58, 12, 12).isColliding.char
@@ -227,7 +230,7 @@ function update() {
       color("light_yellow")
       particle(player.pos, player.pCount * 2, 2)
       play("coin")
-      myAddScore(player.pCount * (1 + floor(player.pCount/3)/2), G.WIDTH/2 - 3, G.HEIGHT/2 - 8, "light_yellow")
+      myAddScore(player.pCount * (1 + floor((player.pCount - 1)/3)/2), G.WIDTH/2 - 3, G.HEIGHT/2 - 8, "light_yellow")
       player.pCount = 0
     }
   }
@@ -281,15 +284,4 @@ function update() {
     let disappear = (s.age <= 0)
     return disappear
   })
-}
-
-function myAddScore(value, x = G.WIDTH/2, y = G.HEIGHT/2, color = "black", time = 60){
-  let score = {
-    pos: vec(x,y),
-    age: time,
-    score: floor(value),
-    color: color
-  }
-  scores.push(score)
-  addScore(value);
 }
