@@ -66,7 +66,9 @@ options = {
   theme: "crt",
   isPlayingBgm: true,
   isReplayEnabled : true,
-  isDrawingParticleFront: true
+  isDrawingParticleFront: true,
+  isCapturing: true,
+  isCapturingGameCanvasOnly: true
 };
 
 let stars;
