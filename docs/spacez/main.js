@@ -272,7 +272,7 @@ function update() {
     //bgModifier -= 0.15;
   }
   if (floor(ticks/10) == ticks/10){
-    rockCanStart = true;
+    //rockCanStart = true;
   }
 
   if(floor(ticks/1000) == ticks/1000){
