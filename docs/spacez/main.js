@@ -37,12 +37,13 @@ lblblb
  lblb
   lb
 `,
-`
-y y y
+`  
+  y
  yyy
-yyyyy
+yybyy
  yyy
-y y y
+  y
+
 `,
 `
  yyy
@@ -56,8 +57,6 @@ const G = {
   HEIGHT: 150,
   STAR_SPEED_MIN: 0.5,
   STAR_SPEED_MAX: 1.0,
-  PLAYER_FIRE_RATE: 4,
-  PLAYER_GUN_OFFSET: 3,
   OFFSET: 3
 }
 options = {
@@ -81,9 +80,13 @@ let bgModifier;
 let scores;
 let speedChange;
 let rockChange;
-let rockCanStart = false;
+let rockCanStart;
+let live;
+let canHurtPlayer;
+let playerHurtCD;
 
 function update() {
+  // Before the gamem start/ for initializing the game
   if (!ticks) {
     stars = times(20, () => {
       const posX = rnd(0, G.WIDTH);
@@ -97,7 +100,7 @@ function update() {
     player = {
       pos: vec(G.WIDTH * 0.5, G.HEIGHT - 50),
       side: false,
-      xSpeed: 2,
+      xSpeed: 1.5,
       xOffset: G.OFFSET,
       yOffset: G.OFFSET- 1,
       angle: 0,
@@ -110,9 +113,20 @@ function update() {
     bgModifier = 1;
     speedChange = 0;
     rockChange = 2;
+    rockCanStart = false;
+    live = 3;
+    canHurtPlayer = true;
+    playerHurtCD = 0;
 
   }
+  
+  // Life counting
+  if(live <= 0){
+    rockCanStart = false;
+    end()
+  }
 
+  // the background starts movement
   stars.forEach((s) => {
     s.pos.y += s.speed * bgModifier;
     s.pos.wrap(0, G.WIDTH, 0, G.HEIGHT);
@@ -121,34 +135,34 @@ function update() {
     box(s.pos, 1);
   })
 
-  // actual rocks
-  // if (floor(ticks/30) == ticks/30 && rockCanStart){
-  //   let numRocks = rndi(1,rockChange)
-  //   let i = 0;
-  //   while (i < numRocks){
-  //     const posX = rnd(0, G.WIDTH);
-  //     const posY = 0;
-  //     const speed = rnd(1.5, 2);
-  //     let newObj = {
-  //       pos: vec(posX, posY),
-  //       speed: speed
-  //     }
-  //     let newObj2 = {
-  //       pos: vec(posX, posY),
-  //       speed: speed
-  //     }
-  //     rbox.push(newObj2);
-  //     r.push(newObj);
-  //     i += 1 ;
-  //   }
+  // spawning the actual rocks
+  if (floor(ticks/50) == ticks/50 && rockCanStart){
+    let numRocks = rndi(1,rockChange)
+    let i = 0;
+    while (i < numRocks){
+      const posX = rnd(0, G.WIDTH);
+      const posY = 0;
+      const speed = rnd(1.5, 2);
+      let newObj = {
+        pos: vec(posX, posY),
+        speed: speed
+      }
+      let newObj2 = {
+        pos: vec(posX, posY),
+        speed: speed
+      }
+      rbox.push(newObj2);
+      r.push(newObj);
+      i += 1 ;
+    }
     
-  //   //if(rndi(1,100) + player.pCount >= 90){
-  //     //color("light_yellow")
-  //     //particle(player.pos, player.pCount, 0.6)
-  //   //}
-  // }
+    //if(rndi(1,100) + player.pCount >= 90){
+      //color("light_yellow")
+      //particle(player.pos, player.pCount, 0.6)
+    //}
+  }
 
-  // power ups
+  // spawning the stars for collecting
   if (floor(ticks/45) == ticks/45){
     let numRocks = rndi(1,2)
     let i = 0;
@@ -169,12 +183,13 @@ function update() {
     //}
   }
 
-  // isPressed, isJustPressed, isJustReleased
+  // isPressed, isJustPressed, isJustReleased/ player input
   if (input.isJustPressed) {
     player.side = !player.side;
     play("select");
   }
   
+  // flipping the player side
   var side = 0;
   color("black");
   if (!player.side){
@@ -191,6 +206,7 @@ function update() {
     player.angle = 45;
   }
   
+  // for letting player wrapping from going over bound
   if (player.pos.x > G.WIDTH){
     player.pos.x = 0;
   }
@@ -198,6 +214,7 @@ function update() {
     player.pos.x = G.WIDTH;
   }
 
+  // particle system
   color("cyan");
   particle(
     player.pos.x + player.xOffset, // x coordinate 
@@ -222,13 +239,18 @@ function update() {
     return (rocks.pos.y > G.HEIGHT)
   })
   
+
+  // this is the actual collider of the rock because if going by actual size, the player crash too easily and fast
   remove( rbox, (rocksbox) => {
     color("transparent");
     rocksbox.pos.y += rocksbox.speed + speedChange;
     let rColl = char ("f", rocksbox.pos).isColliding.char;
     let hit = rColl.b || rColl.c;
-    if (hit){
+    //if (hit && canHurtPlayer){
+    if(hit) {
       play("hit");
+      live--;
+      canHurtPlayer = false;
       end();
     }
     return (rocksbox.pos.y > G.HEIGHT)
@@ -268,15 +290,29 @@ function update() {
   
   if (floor(ticks/10) == ticks/10){
     addScore(1);
-    speedChange += 0.01;
     //bgModifier -= 0.15;
   }
-  if (floor(ticks/10) == ticks/10){
-    //rockCanStart = true;
+
+  if(floor(ticks/100) == ticks/100 && rockCanStart){
+    speedChange += 0.01;
+  }
+  if (ticks>250 && !rockCanStart){
+    rockCanStart = true;
   }
 
   if(floor(ticks/1000) == ticks/1000){
     rockChange += 1;
+  }
+
+  if(!canHurtPlayer){
+    console.log(playerHurtCD);
+    if(floor(ticks/100) == ticks/100){
+      playerHurtCD += 1;
+    }
+    if(playerHurtCD >= 5){
+      playerHurtCD = 0;
+      canHurtPlayer = true;
+    }
   }
 }
 
