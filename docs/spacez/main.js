@@ -122,31 +122,31 @@ function update() {
   })
 
   // actual rocks
-  if (floor(ticks/30) == ticks/30 && rockCanStart){
-    let numRocks = rndi(1,rockChange)
-    let i = 0;
-    while (i < numRocks){
-      const posX = rnd(0, G.WIDTH);
-      const posY = 0;
-      const speed = rnd(1.5, 2);
-      let newObj = {
-        pos: vec(posX, posY),
-        speed: speed
-      }
-      let newObj2 = {
-        pos: vec(posX, posY),
-        speed: speed
-      }
-      rbox.push(newObj2);
-      r.push(newObj);
-      i += 1 ;
-    }
+  // if (floor(ticks/30) == ticks/30 && rockCanStart){
+  //   let numRocks = rndi(1,rockChange)
+  //   let i = 0;
+  //   while (i < numRocks){
+  //     const posX = rnd(0, G.WIDTH);
+  //     const posY = 0;
+  //     const speed = rnd(1.5, 2);
+  //     let newObj = {
+  //       pos: vec(posX, posY),
+  //       speed: speed
+  //     }
+  //     let newObj2 = {
+  //       pos: vec(posX, posY),
+  //       speed: speed
+  //     }
+  //     rbox.push(newObj2);
+  //     r.push(newObj);
+  //     i += 1 ;
+  //   }
     
-    //if(rndi(1,100) + player.pCount >= 90){
-      //color("light_yellow")
-      //particle(player.pos, player.pCount, 0.6)
-    //}
-  }
+  //   //if(rndi(1,100) + player.pCount >= 90){
+  //     //color("light_yellow")
+  //     //particle(player.pos, player.pCount, 0.6)
+  //   //}
+  // }
 
   // power ups
   if (floor(ticks/45) == ticks/45){
