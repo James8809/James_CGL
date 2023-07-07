@@ -81,7 +81,7 @@ let bgModifier;
 let scores;
 let speedChange;
 let rockChange;
-let rockCanStart;
+let rockCanStart = false;
 
 function update() {
   if (!ticks) {
