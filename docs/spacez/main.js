@@ -81,6 +81,7 @@ let bgModifier;
 let scores;
 let speedChange;
 let rockChange;
+let rockCanStart;
 
 function update() {
   if (!ticks) {
@@ -121,7 +122,7 @@ function update() {
   })
 
   // actual rocks
-  if (floor(ticks/30) == ticks/30){
+  if (floor(ticks/30) == ticks/30 && rockCanStart){
     let numRocks = rndi(1,rockChange)
     let i = 0;
     while (i < numRocks){
@@ -269,6 +270,9 @@ function update() {
     addScore(1);
     speedChange += 0.01;
     //bgModifier -= 0.15;
+  }
+  if (floor(ticks/10) == ticks/10){
+    rockCanStart = true;
   }
 
   if(floor(ticks/1000) == ticks/1000){
